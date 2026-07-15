@@ -1,0 +1,13 @@
+namespace Domain.Entities;
+
+public sealed class Product
+{
+    public int Id { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
+    public DateTime CreatedOn { get; set; }
+    public string? ModifiedBy { get; set; }
+    public DateTime? ModifiedOn { get; set; }
+    public ICollection<Item> Items { get; set; } = new List<Item>();
+}
