@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace API.Middleware;
 
-public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> log)
+public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> log, IHostEnvironment environment)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -29,7 +29,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
             await context.Response.WriteAsJsonAsync(new
             {
                 type = "https://httpstatuses.com/" + status,
-                title = status == StatusCodes.Status500InternalServerError ? "Unexpected server error" : ex.Message,
+                title = status == StatusCodes.Status500InternalServerError && !environment.IsDevelopment() ? "Unexpected server error" : ex.Message,
                 status,
                 traceId = context.TraceIdentifier,
                 errors = ex is ValidationException validationEx

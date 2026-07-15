@@ -34,7 +34,7 @@ public sealed class ProductsController(IProductService service) : ControllerBase
     {
         await v.ValidateAndThrowAsync(r, ct);
         var p = await service.CreateAsync(r, User.Identity?.Name ?? "unknown", ct);
-        return CreatedAtAction(nameof(Get), new { id = p.Id, version = "1" }, p);
+        return Created($"/api/v1/products/{p.Id}", p);
     }
 
     [HttpPut("{id:int}")]

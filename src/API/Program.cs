@@ -55,7 +55,27 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<AppUser>>();
-    await DatabaseSeeder.SeedAsync(db, hasher);
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DatabaseStartup");
+
+    const int maxAttempts = 5;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            await DatabaseSeeder.SeedAsync(db, hasher);
+            break;
+        }
+        catch (Exception ex) when (attempt < maxAttempts)
+        {
+            logger.LogWarning(ex, "Database initialization attempt {Attempt}/{MaxAttempts} failed. Retrying...", attempt, maxAttempts);
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+        catch (Exception ex)
+        {
+            logger.LogCritical(ex, "Database initialization failed. Verify SQL Server LocalDB is installed or override ConnectionStrings__DefaultConnection.");
+            throw;
+        }
+    }
 }
 
 app.Run();

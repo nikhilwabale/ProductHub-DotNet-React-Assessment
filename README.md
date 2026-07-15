@@ -13,6 +13,27 @@ src/Infrastructure
 
 A separate React project is included under `src/Web` only as an additional demonstration UI. It consumes the same documented REST API and does not replace any assignment requirement.
 
+
+## Quick start for reviewers
+
+The repository has portable local defaults and does not require source-code edits.
+
+```bash
+dotnet restore
+dotnet build
+dotnet run --project src/API --launch-profile API
+```
+
+Open `http://localhost:5080/swagger`. In a second terminal:
+
+```bash
+cd src/Web
+npm i
+npm run dev
+```
+
+Open `http://127.0.0.1:5173`. The API creates a SQL Server LocalDB database automatically. See [`PORTABLE_SETUP.md`](PORTABLE_SETUP.md) for complete setup and alternatives.
+
 ## Included requirements
 
 - .NET 8 and ASP.NET Core Web API
@@ -80,12 +101,12 @@ Requirements: .NET 8 SDK, SQL Server and Node.js 20+.
 2. Right-click the `API` project and choose **Set as Startup Project**.
 3. Select the `https` or `http` launch profile.
 4. Press **F5** or **Ctrl+F5**.
-5. Swagger opens automatically at `https://localhost:57070/swagger` or `http://localhost:57071/swagger`.
+5. Swagger opens automatically at `http://localhost:5080/swagger`.
 
 The default local database connection matches the working AMS setup:
 
 ```text
-Server=localhost\SQLEXPRESS;Database=CRNProducts;Trusted_Connection=True;TrustServerCertificate=True
+Server=(localdb)\MSSQLLocalDB;Database=ProductHubAssessmentDb;Trusted_Connection=True;TrustServerCertificate=True
 ```
 
 The API creates and seeds the database automatically on first run.
@@ -105,7 +126,7 @@ npm i
 npm run dev
 ```
 
-The UI defaults to `http://localhost:5173` and calls the Visual Studio API profile at `http://localhost:57071/api/v1`. Override this using `VITE_API_URL` when needed.
+The UI runs at `http://127.0.0.1:5173` and proxies `/api` to `http://127.0.0.1:5080`. Override the proxy using `VITE_API_PROXY_TARGET` when needed.
 
 ## Development users
 
